@@ -32,7 +32,6 @@ async def extract_account_id(
 ) -> str:
     iam_service = await _resolve_dependencies(infrastructure_dependencies.container, iam_service_interface.IAMService)
     try:
-        logger.debug(f"Extracted token: {credentials.credentials}")
         return await iam_service.get_user_id(credentials.credentials)
     except exceptions.UnauthorizedError as e:
         raise fastapi.HTTPException(status.HTTP_403_FORBIDDEN, str(e))
@@ -61,7 +60,6 @@ async def extract_account_id_ws(websocket: fastapi.WebSocket) -> str:
 
     iam_service = await _resolve_dependencies(infrastructure_dependencies.container, iam_service_interface.IAMService)
     try:
-        logger.debug(f"Extracted ws token: {token}")
         return await iam_service.get_user_id(token)
     except exceptions.UnauthorizedError as e:
         raise fastapi.WebSocketException(

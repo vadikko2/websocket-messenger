@@ -27,7 +27,6 @@ class HttpIAMService(iam_service.IAMService):
         )
 
     async def get_user_id(self, token: str) -> str:
-        logger.info("Validating token")
         try:
             async with httpx.AsyncClient(
                 transport=self.transport,
@@ -53,4 +52,9 @@ class HttpIAMService(iam_service.IAMService):
 
         response_data = response.json()
 
+        user_id = response_data.get("result", {}).get("user_id")
+        if not user_id:
+            raise exceptions.UnauthorizedError(response_data.get("message", "unknown"))
+
+        logger.info(f"User {user_id} successfully authenticated")
         return response_data["result"]["user_id"]
